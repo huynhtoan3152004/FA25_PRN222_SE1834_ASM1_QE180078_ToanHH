@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using aDealerEDVMS.Repository.ToanHH;
+using aDealerEDVMS.Repository.ToanHH.Models;
 
 namespace aDealerEDVMS.Service.ToanHH
 {
