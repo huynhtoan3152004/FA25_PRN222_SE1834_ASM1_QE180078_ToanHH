@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\aDealerEDVMS.Repository.ToanHH\aDealerEDVMS.Repository.ToanHH.csproj" />
+  </ItemGroup>
+
 </Project>
