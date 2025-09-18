@@ -28,7 +28,7 @@ namespace aDealerEDVMS.Repository.ToanHH
         }
 
         // Tìm kiếm đại lý theo tên
-        public async Task<List<DealersHht>> SearchAsync(string dealerName)
+        public async Task<List<DealersHht>> SearchAsync(string dealerName, decimal rating, string address)
         {
             var items = await _context.DealersHhts
                 .Where(d => d.DealerName.Contains(dealerName) || string.IsNullOrEmpty(dealerName))

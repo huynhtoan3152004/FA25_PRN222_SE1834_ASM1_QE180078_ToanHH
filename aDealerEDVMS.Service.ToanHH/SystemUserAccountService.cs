@@ -8,22 +8,27 @@ using aDealerEDVMS.Repository.ToanHH.Models;
 
 namespace aDealerEDVMS.Service.ToanHH
 {
-    public interface ISystemUserAccountService
-    {
-        Task<SystemUserAccount> GetUserAccountAsync(string username, string password); 
-    }
-    public class SystemUserAccountService : ISystemUserAccountService
-    {
-        private readonly IUnitOfWork _unitOfWork;
 
+    public class SystemUserAccountService 
+    {
+        private readonly SystemUserAccountRepository _repository;
         public SystemUserAccountService()
         {
-            _unitOfWork ??= new UnitOfWork();
+            _repository = new SystemUserAccountRepository();
         }
-
-        public async Task<SystemUserAccount> GetUserAccountAsync(string userName, string password)
+        public async Task<SystemUserAccount> GetUserAccount(string username, string password)
         {
-            return await _unitOfWork.SystemUserAccountRepository.GetUserAccountAsync(userName, password);
+            try
+            {
+                return await _repository.GetUserAccountAsync(username, password);
+            }
+            catch (Exception ex)
+            {
+                // Log hoặc xử lý lỗi nếu cần
+            }
+            return null;
         }
+            
+    
     }
 }

@@ -1,0 +1,96 @@
+﻿@page
+@model aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].DealerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].DealerCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].EstablishedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].TotalStaff)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].Rating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].LastAudit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealersHht[0].CreatedBy)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.DealersHht) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DealerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DealerCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstablishedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalStaff)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastAudit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.DealerId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.DealerId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.DealerId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
