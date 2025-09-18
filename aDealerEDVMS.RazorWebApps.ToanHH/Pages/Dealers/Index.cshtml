@@ -1,4 +1,4 @@
-﻿@page
+﻿@* @page
 @model aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers.IndexModel
 
 @{
@@ -93,4 +93,84 @@
         </tr>
 }
     </tbody>
-</table>
+</table> *@
+
+@page
+@model aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers.IndexModel
+
+@{
+    ViewData["Title"] = "Dealers Management";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-primary">Dealers Management</h2>
+        <a asp-page="Create" class="btn btn-primary">
+            Create New Dealer
+        </a>
+    </div>
+
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].DealerName)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].DealerCode)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].Address)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].Phone)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].Email)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].EstablishedDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].IsActive)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].TotalStaff)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].Rating)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].LastAudit)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].CreatedBy)</th>
+                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].DealerContractsHhts.FirstOrDefault().ContractId)</th>
+
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DealersHht)
+                    {
+                        <tr>
+                            <td>@item.DealerName</td>
+                            <td><span class="badge bg-info text-dark">@item.DealerCode</span></td>
+                            <td>@item.Address</td>
+                            <td>@item.Phone</td>
+                            <td>@item.Email</td>
+                            <td>@item.EstablishedDate?.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                @if (item.IsActive == true)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else if (item.IsActive == false)
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Unknown</span>
+                                }
+                            </td>
+                            <td>@item.TotalStaff</td>
+                            <td><span class="text-warning fw-bold">@item.Rating</span></td>
+                            <td>@item.LastAudit?.ToString("yyyy-MM-dd")</td>
+                            <td>@item.CreatedBy</td>
+                            <td>@Html.DisplayFor(modelItem => item.DealerContractsHhts.FirstOrDefault().ContractId)</td>
+                            <td class="text-center">
+                                <a asp-page="./Edit" asp-route-id="@item.DealerId" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a asp-page="./Details" asp-route-id="@item.DealerId" class="btn btn-sm btn-outline-secondary">Details</a>
+                                <a asp-page="./Delete" asp-route-id="@item.DealerId" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+

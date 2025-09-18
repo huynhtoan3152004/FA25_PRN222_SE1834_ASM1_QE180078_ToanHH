@@ -23,7 +23,9 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 
         public async Task OnGetAsync()
         {
-            DealersHht = await _context.DealersHhts.ToListAsync();
+            DealersHht = await _context.DealersHhts
+                .Include(d => d.DealerContractsHhts) // Lấy luôn các hợp đồng của từng dealer
+                .ToListAsync();
         }
     }
 }
