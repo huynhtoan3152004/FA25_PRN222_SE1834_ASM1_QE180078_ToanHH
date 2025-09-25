@@ -4,20 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using aDealerEDVMS.Repository.ToanHH.DBcontext;
 using aDealerEDVMS.Repository.ToanHH.Models;
+using aDealerEDVMS.Service.ToanHH;
 
 namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 {
     public class EditModel : PageModel
     {
-        private readonly aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext _context;
+        private readonly IDealerHhtService _dealerHhtService;
 
-        public EditModel(aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext context)
+        public EditModel(IDealerHhtService dealerHhtService)
         {
-            _context = context;
+            _dealerHhtService = dealerHhtService;
         }
 
         [BindProperty]
@@ -30,7 +28,7 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
                 return NotFound();
             }
 
-            var dealershht =  await _context.DealersHhts.FirstOrDefaultAsync(m => m.DealerId == id);
+            var dealershht = await _dealerHhtService.GetByIdAsync(id.Value);
             if (dealershht == null)
             {
                 return NotFound();
@@ -39,8 +37,6 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -48,30 +44,20 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
                 return Page();
             }
 
-            _context.Attach(DealersHht).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _dealerHhtService.UpdateAsync(DealersHht);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
-                if (!DealersHhtExists(DealersHht.DealerId))
+                if (await _dealerHhtService.GetByIdAsync(DealersHht.DealerId) == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return RedirectToPage("./Index");
-        }
-
-        private bool DealersHhtExists(int id)
-        {
-            return _context.DealersHhts.Any(e => e.DealerId == id);
         }
     }
 }

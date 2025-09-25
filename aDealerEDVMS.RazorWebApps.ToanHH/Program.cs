@@ -1,9 +1,13 @@
+using aDealerEDVMS.Service.ToanHH;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddDbContext<aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext>();
+//builder.Services.AddDbContext<aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext>();
+builder.Services.AddScoped<IDealerHhtService, DearlerHhtService>();
+builder.Services.AddScoped<DealerContractsHhtService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

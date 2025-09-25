@@ -7,25 +7,24 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using aDealerEDVMS.Repository.ToanHH.DBcontext;
 using aDealerEDVMS.Repository.ToanHH.Models;
+using aDealerEDVMS.Service.ToanHH;
 
 namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 {
     public class IndexModel : PageModel
     {
-        private readonly aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext _context;
+        private readonly IDealerHhtService _dealerHhtService;
 
-        public IndexModel(aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext context)
+        public IndexModel(IDealerHhtService dealerHhtService)
         {
-            _context = context;
+            _dealerHhtService = dealerHhtService;
         }
 
-        public IList<DealersHht> DealersHht { get;set; } = default!;
+        public IList<DealersHht> DealersHht { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            DealersHht = await _context.DealersHhts
-                .Include(d => d.DealerContractsHhts) // Lấy luôn các hợp đồng của từng dealer
-                .ToListAsync();
+            DealersHht = await _dealerHhtService.GetAllAsync();
         }
     }
 }

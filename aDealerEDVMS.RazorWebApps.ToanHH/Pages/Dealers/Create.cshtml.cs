@@ -7,27 +7,33 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using aDealerEDVMS.Repository.ToanHH.DBcontext;
 using aDealerEDVMS.Repository.ToanHH.Models;
+using aDealerEDVMS.Service.ToanHH;
 
 namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 {
     public class CreateModel : PageModel
     {
-        private readonly aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext _context;
-
-        public CreateModel(aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext context)
+        private readonly IDealerHhtService _dealerHhtService;
+        
+        public CreateModel(IDealerHhtService dealerHhtService)
         {
-            _context = context;
+            _dealerHhtService = dealerHhtService;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
+            // Initialize new dealer object
+            var DealersHht = await _dealerHhtService.GetAllAsync();
+            
+            // Load any reference data if needed (e.g., for dropdowns)
+            // You can load other related data here using the service
+            
             return Page();
         }
 
         [BindProperty]
         public DealersHht DealersHht { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -35,9 +41,8 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
                 return Page();
             }
 
-            _context.DealersHhts.Add(DealersHht);
-            await _context.SaveChangesAsync();
-
+            // Use the correct method name from your service
+            await _dealerHhtService.CreateAsync(DealersHht);
             return RedirectToPage("./Index");
         }
     }
