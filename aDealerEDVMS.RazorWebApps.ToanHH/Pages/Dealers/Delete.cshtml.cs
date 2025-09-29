@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using aDealerEDVMS.Repository.ToanHH.Models;
 using aDealerEDVMS.Service.ToanHH;
+using Microsoft.AspNetCore.Authorization;
 
 namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 {
+    [Authorize(Roles = "1")]
     public class DeleteModel : PageModel
     {
         private readonly IDealerHhtService _dealerHhtService;

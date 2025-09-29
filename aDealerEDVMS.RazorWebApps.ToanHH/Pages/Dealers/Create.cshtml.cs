@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using aDealerEDVMS.Repository.ToanHH.DBcontext;
 using aDealerEDVMS.Repository.ToanHH.Models;
 using aDealerEDVMS.Service.ToanHH;
+using Microsoft.AspNetCore.Authorization;
 
 namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 {
+    [Authorize(Roles = "1,2")]
     public class CreateModel : PageModel
     {
         private readonly IDealerHhtService _dealerHhtService;

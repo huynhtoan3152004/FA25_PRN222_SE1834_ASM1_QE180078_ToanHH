@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using aDealerEDVMS.Repository.ToanHH.DBcontext;
 using aDealerEDVMS.Repository.ToanHH.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 {
+    [Authorize(Roles = "1,2")]
     public class DetailsModel : PageModel
     {
         private readonly aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext _context;

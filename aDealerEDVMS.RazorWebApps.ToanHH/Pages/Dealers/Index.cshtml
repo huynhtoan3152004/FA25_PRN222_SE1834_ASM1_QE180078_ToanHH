@@ -1,176 +1,326 @@
-﻿@* @page
-@model aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers.IndexModel
-
-@{
-    ViewData["Title"] = "Index";
-}
-
-<h1>Index</h1>
-
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].DealerName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].DealerCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].EstablishedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].IsActive)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].TotalStaff)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].Rating)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].LastAudit)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DealersHht[0].CreatedBy)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.DealersHht) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DealerName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DealerCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstablishedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalStaff)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rating)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastAudit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.DealerId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.DealerId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.DealerId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table> *@
-
-@page
+﻿@page
 @model aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers.IndexModel
 
 @{
     ViewData["Title"] = "Dealers Management";
+    
+    // Move C# logic to code block
+    var currentRating = ViewData["CurrentRatingFilter"]?.ToString() ?? "";
+    var currentStatus = ViewData["CurrentStatusFilter"]?.ToString() ?? "";
+    var currentSort = ViewData["CurrentSortBy"]?.ToString() ?? "";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold text-primary">Dealers Management</h2>
-        <a asp-page="Create" class="btn btn-primary">
-            Create New Dealer
-        </a>
+<div class="container-fluid p-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-purple mb-1">Dealers Management</h2>
+            <p class="text-muted">Manage your dealer network</p>
+        </div>
+        <a asp-page="Create" class="btn btn-purple">Add New Dealer</a>
     </div>
 
-    <div class="card shadow-sm rounded-3">
-        <div class="card-body p-0">
-            <table class="table table-hover table-striped align-middle mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].DealerName)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].DealerCode)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].Address)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].Phone)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].Email)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].EstablishedDate)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].IsActive)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].TotalStaff)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].Rating)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].LastAudit)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].CreatedBy)</th>
-                        <th>@Html.DisplayNameFor(model => model.DealersHht[0].DealerContractsHhts.FirstOrDefault().ContractId)</th>
-
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.DealersHht)
-                    {
-                        <tr>
-                            <td>@item.DealerName</td>
-                            <td><span class="badge bg-info text-dark">@item.DealerCode</span></td>
-                            <td>@item.Address</td>
-                            <td>@item.Phone</td>
-                            <td>@item.Email</td>
-                            <td>@item.EstablishedDate?.ToString("yyyy-MM-dd")</td>
-                            <td>
-                                @if (item.IsActive == true)
-                                {
-                                    <span class="badge bg-success">Active</span>
-                                }
-                                else if (item.IsActive == false)
-                                {
-                                    <span class="badge bg-secondary">Inactive</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Unknown</span>
-                                }
-                            </td>
-                            <td>@item.TotalStaff</td>
-                            <td><span class="text-warning fw-bold">@item.Rating</span></td>
-                            <td>@item.LastAudit?.ToString("yyyy-MM-dd")</td>
-                            <td>@item.CreatedBy</td>
-                            <td>@Html.DisplayFor(modelItem => item.DealerContractsHhts.FirstOrDefault().ContractId)</td>
-                            <td class="text-center">
-                                <a asp-page="./Edit" asp-route-id="@item.DealerId" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a asp-page="./Details" asp-route-id="@item.DealerId" class="btn btn-sm btn-outline-secondary">Details</a>
-                                <a asp-page="./Delete" asp-route-id="@item.DealerId" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+    <!-- Search Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-light-purple">
+            <h6 class="mb-0 text-purple">Search & Filter</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Dealer Name</label>
+                    <input type="text" class="form-control" 
+                           placeholder="Enter dealer name..." 
+                           name="SearchDealerName" 
+                           value="@ViewData["CurrentDealerNameFilter"]">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Min Rating</label>
+                    <select class="form-select" name="SearchRating">
+                        <option value="">Any Rating</option>
+                        <option value="1" selected="@(currentRating == "1")">1+ Stars</option>
+                        <option value="2" selected="@(currentRating == "2")">2+ Stars</option>
+                        <option value="3" selected="@(currentRating == "3")">3+ Stars</option>
+                        <option value="4" selected="@(currentRating == "4")">4+ Stars</option>
+                        <option value="5" selected="@(currentRating == "5")">5 Stars</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" 
+                           placeholder="Enter address..." 
+                           name="SearchAddress" 
+                           value="@ViewData["CurrentAddressFilter"]">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="StatusFilter">
+                        <option value="">All Status</option>
+                        <option value="true" selected="@(currentStatus == "True")">Active</option>
+                        <option value="false" selected="@(currentStatus == "False")">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Sort By</label>
+                    <select class="form-select" name="SortBy">
+                        <option value="">Default</option>
+                        <option value="name" selected="@(currentSort == "name")">Name</option>
+                        <option value="rating" selected="@(currentSort == "rating")">Rating</option>
+                        <option value="date" selected="@(currentSort == "date")">Date</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-purple me-2">Search</button>
+                    <a href="@Url.Page("Index")" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
         </div>
     </div>
+
+    <!-- Search Results Info -->
+    @if (!string.IsNullOrEmpty(ViewData["CurrentDealerNameFilter"]?.ToString()) || 
+         ViewData["CurrentRatingFilter"] != null || 
+         !string.IsNullOrEmpty(ViewData["CurrentAddressFilter"]?.ToString()))
+    {
+        <div class="alert alert-info mb-4">
+            <strong>Search Results:</strong> Found @Model.DealersHht.Count dealer(s)
+            @if (!string.IsNullOrEmpty(ViewData["CurrentDealerNameFilter"]?.ToString()))
+            {
+                <span class="badge bg-purple ms-2">Name: @ViewData["CurrentDealerNameFilter"]</span>
+            }
+            @if (ViewData["CurrentRatingFilter"] != null)
+            {
+                <span class="badge bg-purple ms-2">Rating: @ViewData["CurrentRatingFilter"]+ Stars</span>
+            }
+            @if (!string.IsNullOrEmpty(ViewData["CurrentAddressFilter"]?.ToString()))
+            {
+                <span class="badge bg-purple ms-2">Address: @ViewData["CurrentAddressFilter"]</span>
+            }
+        </div>
+    }
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-purple">@Model.DealersHht.Count</h4>
+                    <p class="text-muted mb-0">Total Dealers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-purple">@Model.DealersHht.Count(d => d.IsActive == true)</h4>
+                    <p class="text-muted mb-0">Active Dealers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-purple">@(Model.DealersHht.Any() ? Model.DealersHht.Average(d => d.Rating ?? 0).ToString("F1") : "0.0")</h4>
+                    <p class="text-muted mb-0">Avg Rating</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-purple">@Model.DealersHht.Sum(d => d.TotalStaff ?? 0)</h4>
+                    <p class="text-muted mb-0">Total Staff</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="card">
+        <div class="card-header bg-purple text-white">
+            <h6 class="mb-0">Dealers List</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Dealer Name</th>
+                            <th>Code</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Established</th>
+                            <th>Status</th>
+                            <th>Staff</th>
+                            <th>Rating</th>
+                            <th>Last Audit</th>
+                            <th>Created By</th>
+                            <th>Contract</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.DealersHht)
+                        {
+                            <tr>
+                                <td><strong>@item.DealerName</strong></td>
+                                <td><span class="badge bg-light-purple text-purple">@item.DealerCode</span></td>
+                                <td>@item.Address</td>
+                                <td><a href="tel:@item.Phone">@item.Phone</a></td>
+                                <td><a href="mailto:@item.Email">@item.Email</a></td>
+                                <td>@item.EstablishedDate?.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    @if (item.IsActive == true)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else if (item.IsActive == false)
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Unknown</span>
+                                    }
+                                </td>
+                                <td>@item.TotalStaff</td>
+                                <td>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= (item.Rating ?? 0))
+                                        {
+                                            <span class="text-warning">★</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">☆</span>
+                                        }
+                                    }
+                                    (@item.Rating)
+                                </td>
+                                <td>@item.LastAudit?.ToString("MMM dd, yyyy")</td>
+                                <td>@item.CreatedBy</td>
+                                <td>
+                                    @if (item.DealerContractsHhts?.Any() == true)
+                                    {
+                                        <span class="badge bg-success">@item.DealerContractsHhts.FirstOrDefault()?.ContractId</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">No Contract</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-page="./Details" asp-route-id="@item.DealerId" 
+                                           class="btn btn-outline-info">View</a>
+                                        <a asp-page="./Edit" asp-route-id="@item.DealerId" 
+                                           class="btn btn-outline-purple">Edit</a>
+                                        <a asp-page="./Delete" asp-route-id="@item.DealerId" 
+                                           class="btn btn-outline-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Pagination -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link">Previous</a>
+            </li>
+            <li class="page-item active">
+                <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>
+
+<!-- Simple Purple Theme CSS -->
+<style>
+    :root {
+        --purple: #6f42c1;
+        --light-purple: #f8f6ff;
+        --purple-hover: #5a359a;
+    }
+
+    .text-purple {
+        color: var(--purple) !important;
+    }
+
+    .bg-purple {
+        background-color: var(--purple) !important;
+    }
+
+    .bg-light-purple {
+        background-color: var(--light-purple) !important;
+    }
+
+    .btn-purple {
+        background-color: var(--purple);
+        border-color: var(--purple);
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: var(--purple-hover);
+        border-color: var(--purple-hover);
+        color: white;
+    }
+
+    .btn-outline-purple {
+        color: var(--purple);
+        border-color: var(--purple);
+    }
+
+    .btn-outline-purple:hover {
+        background-color: var(--purple);
+        border-color: var(--purple);
+        color: white;
+    }
+
+    .badge.bg-purple {
+        background-color: var(--purple) !important;
+    }
+
+    .card {
+        border: 1px solid #e3e6f0;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: var(--purple);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: var(--light-purple);
+    }
+
+    .page-link {
+        color: var(--purple);
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--purple);
+        border-color: var(--purple);
+    }
+</style>
 
 
