@@ -1,3 +1,4 @@
+using aDealerEDVMS.RazorWebApps.ToanHH.Hubs;
 using aDealerEDVMS.Service.ToanHH;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -5,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-
+builder.Services.AddSignalR();
 //builder.Services.AddDbContext<aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext>();
 builder.Services.AddScoped<IDealerHhtService, DearlerHhtService>();
 builder.Services.AddScoped<DealerContractsHhtService>();
@@ -35,5 +36,5 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages().RequireAuthorization(); ///cau hinh authorization
-
+app.MapHub<aDealer>("/DealerHub");
 app.Run();

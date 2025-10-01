@@ -82,7 +82,8 @@
     
     <form method="post">
         <input type="hidden" asp-for="DealersHht.DealerId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Delete" class="btn btn-danger" /> 
+        <input type="button" id="btnHubDelete" value="Delete by SignalRHub" class="btn btn-warning" />
         <a asp-page="./Index">Back to List</a>
     </form>
 </div>
