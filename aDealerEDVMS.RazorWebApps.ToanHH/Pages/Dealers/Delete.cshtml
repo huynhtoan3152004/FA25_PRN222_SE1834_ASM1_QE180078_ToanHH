@@ -87,3 +87,44 @@
         <a asp-page="./Index">Back to List</a>
     </form>
 </div>
+
+<!-- Simple SignalR Script -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+<script>
+$(document).ready(function () {
+    // Khởi tạo SignalR
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/DealerHub")
+        .build();
+
+    connection.start()
+        .then(function () {
+            console.log("✅ SignalR Connected");
+        })
+        .catch(function (err) {
+            console.error("❌ SignalR failed:", err);
+            alert("SignalR connection failed: " + err);
+        });
+
+    // Xử lý nút Delete by SignalR Hub
+$('#btnHubDelete').click(function() {
+        console.log("🎯 Delete button clicked");
+        
+        const dealerId = @Model.DealersHht.DealerId;
+        console.log("🎯 Dealer ID:", dealerId);
+        
+        // Gọi Hub method
+        connection.invoke("DeleteDealerRealtime", dealerId)
+            .then(function() {
+                console.log("✅ Delete successful");
+                alert("Deleted successfully via SignalR!");
+                window.location.href = "/Dealers/Index";
+            })
+            .catch(function(err) {
+                console.error("❌ Delete failed:", err);
+                alert("Delete failed: " + err);
+            });
+    });
+});
+</script>

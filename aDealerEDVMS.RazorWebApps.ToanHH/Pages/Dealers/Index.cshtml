@@ -323,4 +323,86 @@
     }
 </style>
 
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+<script>
+$(document).ready(function () {
+    // Khởi tạo SignalR
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/DealerHub")
+        .build();
+
+    connection.start();
+
+    // Lắng nghe sự kiện delete
+    connection.on("DealerDeleted", function (dealerId) {
+        // Xóa row khỏi table
+        $('table tbody tr').each(function() {
+            const $row = $(this);
+            const $editLink = $row.find('a[href*="Edit"]');
+            
+            if ($editLink.length > 0) {
+                const href = $editLink.attr('href');
+                if (href && href.includes('id=' + dealerId)) {
+                    $row.fadeOut(500, function() {
+                        $(this).remove();
+                    });
+                }
+            }
+        });
+        
+        alert("Dealer deleted by another user!");
+    });
+
+    // Listen for new dealer created
+    connection.on("DealerCreated", function (dealer) {
+        console.log("🆕 New dealer created:", dealer);
+        
+        // Thêm row mới vào table (đơn giản)
+        const newRow = `
+            <tr style="background-color: #d4edda;">
+                <td><strong>${dealer.dealerName}</strong></td>
+                <td><span class="badge bg-light-purple text-purple">${dealer.dealerCode}</span></td>
+                <td>${dealer.address || ''}</td>
+                <td>${dealer.phone || ''}</td>
+                <td>${dealer.email || ''}</td>
+                <td>${dealer.establishedDate ? new Date(dealer.establishedDate).toLocaleDateString() : ''}</td>
+                <td>
+                    ${dealer.isActive ? 
+                        '<span class="badge bg-success">Active</span>' : 
+                        '<span class="badge bg-secondary">Inactive</span>'
+                    }
+                </td>
+                <td>${dealer.totalStaff || 0}</td>
+                <td>${dealer.rating || 0}</td>
+                <td></td>
+                <td>${dealer.createdBy || 'System'}</td>
+                <td><span class="badge bg-secondary">No Contract</span></td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <a href="/Dealers/Details/${dealer.dealerId}" class="btn btn-outline-info">View</a>
+                        <a href="/Dealers/Edit/${dealer.dealerId}" class="btn btn-outline-purple">Edit</a>
+                        <a href="/Dealers/Delete/${dealer.dealerId}" class="btn btn-outline-danger">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        `;
+        
+        // Xóa "No dealers found" nếu có
+        $('table tbody tr:contains("No dealers found")').remove();
+        
+        // Thêm row mới lên đầu
+        $('table tbody').prepend(newRow);
+        
+        // Hiển thị thông báo
+        alert(`New dealer "${dealer.dealerName}" created by another user!`);
+        
+        // Bỏ highlight sau 3 giây
+        setTimeout(() => {
+            $('table tbody tr:first').css('background-color', '');
+        }, 3000);
+    });
+});
+</script>
+
 

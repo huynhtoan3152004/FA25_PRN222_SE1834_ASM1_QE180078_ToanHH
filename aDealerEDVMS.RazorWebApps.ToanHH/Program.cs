@@ -33,7 +33,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapRazorPages().RequireAuthorization(); ///cau hinh authorization
 app.MapHub<aDealer>("/DealerHub");

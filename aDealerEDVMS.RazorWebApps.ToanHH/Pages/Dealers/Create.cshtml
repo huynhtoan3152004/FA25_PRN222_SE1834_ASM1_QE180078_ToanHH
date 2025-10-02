@@ -13,53 +13,65 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
             <div class="form-group">
                 <label asp-for="DealersHht.DealerName" class="control-label"></label>
                 <input asp-for="DealersHht.DealerName" class="form-control" />
                 <span asp-validation-for="DealersHht.DealerName" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="DealersHht.DealerCode" class="control-label"></label>
                 <input asp-for="DealersHht.DealerCode" class="form-control" />
                 <span asp-validation-for="DealersHht.DealerCode" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="DealersHht.Address" class="control-label"></label>
                 <input asp-for="DealersHht.Address" class="form-control" />
                 <span asp-validation-for="DealersHht.Address" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="DealersHht.Phone" class="control-label"></label>
                 <input asp-for="DealersHht.Phone" class="form-control" />
                 <span asp-validation-for="DealersHht.Phone" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="DealersHht.Email" class="control-label"></label>
                 <input asp-for="DealersHht.Email" class="form-control" />
                 <span asp-validation-for="DealersHht.Email" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="DealersHht.EstablishedDate" class="control-label"></label>
-                <input asp-for="DealersHht.EstablishedDate" class="form-control" />
+                <input asp-for="DealersHht.EstablishedDate" class="form-control" type="date" />
                 <span asp-validation-for="DealersHht.EstablishedDate" class="text-danger"></span>
             </div>
+            
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DealersHht.IsActive" /> @Html.DisplayNameFor(model => model.DealersHht.IsActive)
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="DealersHht.TotalStaff" class="control-label"></label>
+                <input asp-for="DealersHht.TotalStaff" class="form-control" type="number" />
+                <span asp-validation-for="DealersHht.TotalStaff" class="text-danger"></span>
+            </div>
+            
             <div class="form-group">
                 <label asp-for="DealersHht.Rating" class="control-label"></label>
-                <input asp-for="DealersHht.Rating" class="form-control" />
+                <input asp-for="DealersHht.Rating" class="form-control" type="number" min="1" max="5" step="0.1" />
                 <span asp-validation-for="DealersHht.Rating" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DealersHht.LastAudit" class="control-label"></label>
-                <input asp-for="DealersHht.LastAudit" class="form-control" />
-                <span asp-validation-for="DealersHht.LastAudit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DealersHht.CreatedBy" class="control-label"></label>
-                <input asp-for="DealersHht.CreatedBy" class="form-control" />
-                <span asp-validation-for="DealersHht.CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            
+            <div class="form-group mt-3">
+                <!-- ✅ 2 nút create -->
+                <input type="submit" value="Create (Traditional)" class="btn btn-primary me-2" />
+                <button type="button" id="btnHubCreate" class="btn btn-success me-2">Create by SignalR Hub</button>
             </div>
         </form>
     </div>
@@ -72,3 +84,66 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<!-- ✅ SignalR Script đơn giản -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    console.log("🚀 Create page loaded");
+    
+    // Khởi tạo SignalR
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/DealerHub")
+        .build();
+
+    connection.start()
+        .then(() => console.log("✅ SignalR Connected"))
+        .catch(err => console.error("❌ SignalR failed:", err));
+
+    // ✅ Create button via SignalR (đơn giản nhất)
+    $('#btnHubCreate').click(function() {
+        console.log("🎯 Create via SignalR clicked");
+        
+        // Thu thập dữ liệu từ form
+        const dealerData = {
+            DealerName: $('input[name="DealersHht.DealerName"]').val(),
+            DealerCode: $('input[name="DealersHht.DealerCode"]').val(),
+            Address: $('input[name="DealersHht.Address"]').val(),
+            Phone: $('input[name="DealersHht.Phone"]').val(),
+            Email: $('input[name="DealersHht.Email"]').val(),
+            EstablishedDate: $('input[name="DealersHht.EstablishedDate"]').val() || null,
+            IsActive: $('input[name="DealersHht.IsActive"]').is(':checked'),
+            TotalStaff: parseInt($('input[name="DealersHht.TotalStaff"]').val()) || 0,
+            Rating: parseFloat($('input[name="DealersHht.Rating"]').val()) || 0
+        };
+        
+        console.log("📝 Data:", dealerData);
+        
+        // Validate tối thiểu
+        if (!dealerData.DealerName || !dealerData.DealerCode) {
+            alert("Please enter Dealer Name and Code!");
+            return;
+        }
+        
+        $(this).prop('disabled', true).text('Creating...');
+        
+        // Gọi Hub method
+        connection.invoke("CreateDealerRealtime", dealerData)
+            .then(() => {
+                console.log("✅ Create success");
+                alert("Created successfully via SignalR!");
+                
+                // Clear form
+                $('form')[0].reset();
+                $(this).prop('disabled', false).text('Create by SignalR Hub');
+            })
+            .catch(err => {
+                console.error("❌ Create failed:", err);
+                alert("Create failed: " + err);
+                $(this).prop('disabled', false).text('Create by SignalR Hub');
+            });
+    });
+});
+</script>
