@@ -356,52 +356,23 @@ $(document).ready(function () {
 
     // Listen for new dealer created
     connection.on("DealerCreated", function (dealer) {
-        console.log("🆕 New dealer created:", dealer);
-        
-        // Thêm row mới vào table (đơn giản)
-        const newRow = `
-            <tr style="background-color: #d4edda;">
-                <td><strong>${dealer.dealerName}</strong></td>
-                <td><span class="badge bg-light-purple text-purple">${dealer.dealerCode}</span></td>
-                <td>${dealer.address || ''}</td>
-                <td>${dealer.phone || ''}</td>
-                <td>${dealer.email || ''}</td>
-                <td>${dealer.establishedDate ? new Date(dealer.establishedDate).toLocaleDateString() : ''}</td>
-                <td>
-                    ${dealer.isActive ? 
-                        '<span class="badge bg-success">Active</span>' : 
-                        '<span class="badge bg-secondary">Inactive</span>'
-                    }
-                </td>
-                <td>${dealer.totalStaff || 0}</td>
-                <td>${dealer.rating || 0}</td>
-                <td></td>
-                <td>${dealer.createdBy || 'System'}</td>
-                <td><span class="badge bg-secondary">No Contract</span></td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <a href="/Dealers/Details/${dealer.dealerId}" class="btn btn-outline-info">View</a>
-                        <a href="/Dealers/Edit/${dealer.dealerId}" class="btn btn-outline-purple">Edit</a>
-                        <a href="/Dealers/Delete/${dealer.dealerId}" class="btn btn-outline-danger">Delete</a>
-                    </div>
-                </td>
-            </tr>
-        `;
-        
-        // Xóa "No dealers found" nếu có
-        $('table tbody tr:contains("No dealers found")').remove();
-        
-        // Thêm row mới lên đầu
-        $('table tbody').prepend(newRow);
-        
-        // Hiển thị thông báo
-        alert(`New dealer "${dealer.dealerName}" created by another user!`);
-        
-        // Bỏ highlight sau 3 giây
-        setTimeout(() => {
-            $('table tbody tr:first').css('background-color', '');
-        }, 3000);
+      // Đọc key camelCase
+      const dealerId = dealer.dealerId ?? dealer.DealerId ?? 0;
+      const dealerName = dealer.dealerName ?? dealer.DealerName ?? 'Unknown';
+      const dealerCode = dealer.dealerCode ?? dealer.DealerCode ?? 'N/A';
+
+      const newRow = `
+        <tr style="background-color:#d4edda;">
+          <td><strong>${dealerName}</strong></td>
+          <td><span class="badge bg-light-purple text-purple">${dealerCode}</span></td>
+          <td colspan="11">New dealer #${dealerId} - Please refresh to see full details</td>
+        </tr>`;
+      $('table tbody').prepend(newRow);
+
+      alert(`New dealer "${dealerName}" created!`);
+      setTimeout(() => $('table tbody tr:first').css('background-color',''), 3000);
     });
+
 });
 </script>
 
