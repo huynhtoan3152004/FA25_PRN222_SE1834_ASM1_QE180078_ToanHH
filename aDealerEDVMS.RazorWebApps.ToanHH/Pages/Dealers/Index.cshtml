@@ -326,53 +326,49 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
 <script>
-$(document).ready(function () {
-    // Khởi tạo SignalR
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/DealerHub")
-        .build();
+$(function(){
+    const hub = new signalR.HubConnectionBuilder().withUrl("/DealerHub").build();
 
-    connection.start();
+    hub.start()
+       .then(()=>console.log("IndexHub connected"))
+       .catch(e=>console.error("IndexHub connect error:", e));
 
-    // Lắng nghe sự kiện delete
-    connection.on("DealerDeleted", function (dealerId) {
-        // Xóa row khỏi table
-        $('table tbody tr').each(function() {
-            const $row = $(this);
-            const $editLink = $row.find('a[href*="Edit"]');
-            
-            if ($editLink.length > 0) {
-                const href = $editLink.attr('href');
-                if (href && href.includes('id=' + dealerId)) {
-                    $row.fadeOut(500, function() {
-                        $(this).remove();
-                    });
-                }
+    hub.on("DealerCreated", d=>{
+        console.log("DealerCreated event:", d);
+        const row = `
+        <tr style="background:#e9fce9">
+            <td><strong>${d.dealerName}</strong></td>
+            <td><span class="badge bg-light-purple text-purple">${d.dealerCode}</span></td>
+            <td>${d.address||''}</td>
+            <td>${d.phone||''}</td>
+            <td>${d.email||''}</td>
+            <td>${d.establishedDate ? new Date(d.establishedDate).toLocaleDateString() : ''}</td>
+            <td>${d.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
+            <td>${d.totalStaff ?? ''}</td>
+            <td>${d.rating ?? ''}</td>
+            <td>${d.lastAudit ? new Date(d.lastAudit).toLocaleDateString() : ''}</td>
+            <td>${d.createdBy}</td>
+            <td><span class="badge bg-secondary">No Contract</span></td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <a href="/Dealers/Details?id=${d.dealerId}" class="btn btn-outline-info">View</a>
+                    <a href="/Dealers/Edit?id=${d.dealerId}" class="btn btn-outline-purple">Edit</a>
+                    <a href="/Dealers/Delete?id=${d.dealerId}" class="btn btn-outline-danger">Delete</a>
+                </div>
+            </td>
+        </tr>`;
+        $('table tbody').prepend(row);
+        setTimeout(()=>$('table tbody tr:first').css('background',''),1500);
+    });
+
+    hub.on("DealerDeleted", id=>{
+        $('table tbody tr').each(function(){
+            const delLink = $(this).find(`a[href*="Delete?id=${id}"]`);
+            if(delLink.length){
+                $(this).fadeOut(300, function(){ $(this).remove(); });
             }
         });
-        
-        alert("Dealer deleted by another user!");
     });
-
-    // Listen for new dealer created
-    connection.on("DealerCreated", function (dealer) {
-      // Đọc key camelCase
-      const dealerId = dealer.dealerId ?? dealer.DealerId ?? 0;
-      const dealerName = dealer.dealerName ?? dealer.DealerName ?? 'Unknown';
-      const dealerCode = dealer.dealerCode ?? dealer.DealerCode ?? 'N/A';
-
-      const newRow = `
-        <tr style="background-color:#d4edda;">
-          <td><strong>${dealerName}</strong></td>
-          <td><span class="badge bg-light-purple text-purple">${dealerCode}</span></td>
-          <td colspan="11">New dealer #${dealerId} - Please refresh to see full details</td>
-        </tr>`;
-      $('table tbody').prepend(newRow);
-
-      alert(`New dealer "${dealerName}" created!`);
-      setTimeout(() => $('table tbody tr:first').css('background-color',''), 3000);
-    });
-
 });
 </script>
 
