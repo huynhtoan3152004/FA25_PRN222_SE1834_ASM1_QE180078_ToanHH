@@ -7,74 +7,74 @@
 
 <h1>Details</h1>
 
-<div>
+<div id="dealerDetails">
     <h4>DealersHht</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.DealerName)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="dealerName">
             @Html.DisplayFor(model => model.DealersHht.DealerName)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.DealerCode)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="dealerCode">
             @Html.DisplayFor(model => model.DealersHht.DealerCode)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.Address)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="address">
             @Html.DisplayFor(model => model.DealersHht.Address)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.Phone)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="phone">
             @Html.DisplayFor(model => model.DealersHht.Phone)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.Email)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="email">
             @Html.DisplayFor(model => model.DealersHht.Email)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.EstablishedDate)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="establishedDate">
             @Html.DisplayFor(model => model.DealersHht.EstablishedDate)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.IsActive)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="isActive">
             @Html.DisplayFor(model => model.DealersHht.IsActive)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.TotalStaff)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="totalStaff">
             @Html.DisplayFor(model => model.DealersHht.TotalStaff)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.Rating)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="rating">
             @Html.DisplayFor(model => model.DealersHht.Rating)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.LastAudit)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="lastAudit">
             @Html.DisplayFor(model => model.DealersHht.LastAudit)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DealersHht.CreatedBy)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="createdBy">
             @Html.DisplayFor(model => model.DealersHht.CreatedBy)
         </dd>
     </dl>
@@ -83,3 +83,61 @@
     <a asp-page="./Edit" asp-route-id="@Model.DealersHht.DealerId">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
+
+<!-- SignalR Script -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+<script>
+$(function(){
+    const dealerId = @Model.DealersHht.DealerId;
+    const hub = new signalR.HubConnectionBuilder()
+        .withUrl("/DealerHub")
+        .withAutomaticReconnect() // Thêm tự động kết nối lại
+        .build();
+    
+    hub.start()
+       .then(() => console.log("✅ DetailsHub connected"))
+       .catch(e => console.error("❌ Hub connect error:", e));
+
+    // Xử lý sự kiện DealerUpdated
+    hub.on("DealerUpdated", d => {
+        console.log("🎯 DealerUpdated event:", d);
+        
+        // Nếu dealer được cập nhật là dealer hiện tại
+        if (d.dealerId == dealerId) {
+            // Hiển thị thông báo
+            $('<div class="alert alert-info mt-3">Dealer information has been updated!</div>')
+                .insertBefore('#dealerDetails')
+                .delay(3000)
+                .fadeOut(500, function() { $(this).remove(); });
+            
+            // Cập nhật thông tin hiển thị
+            $('#dealerName').text(d.dealerName);
+            $('#dealerCode').text(d.dealerCode);
+            $('#address').text(d.address || '');
+            $('#phone').text(d.phone || '');
+            $('#email').text(d.email || '');
+            $('#establishedDate').text(d.establishedDate ? new Date(d.establishedDate).toLocaleDateString() : '');
+            $('#isActive').text(d.isActive ? 'True' : 'False');
+            $('#totalStaff').text(d.totalStaff || '');
+            $('#rating').text(d.rating || '');
+            $('#lastAudit').text(d.lastAudit ? new Date(d.lastAudit).toLocaleDateString() : '');
+            $('#createdBy').text(d.createdBy);
+            
+            // Highlight các thông tin đã thay đổi
+            $('#dealerDetails').css('background', '#e9fcf9');
+            setTimeout(() => $('#dealerDetails').css('background', ''), 1500);
+        }
+    });
+    
+    // Xử lý khi kết nối bị ngắt
+    hub.onclose(error => {
+        console.log("❌ Connection closed", error);
+        setTimeout(() => {
+            hub.start()
+               .then(() => console.log("✅ Connection reestablished"))
+               .catch(err => console.error("❌ Reconnection error:", err));
+        }, 5000); // Thử kết nối lại sau 5 giây
+    });
+});
+</script>
