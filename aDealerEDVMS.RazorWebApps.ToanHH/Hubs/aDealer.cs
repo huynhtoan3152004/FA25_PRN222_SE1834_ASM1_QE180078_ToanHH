@@ -79,5 +79,79 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Hubs
             });
             await Clients.Caller.SendAsync("CreateResult", new { success = true, id = entity.DealerId });
         }
+        
+        // Thêm phương thức UpdateDealerRealtime
+        public async Task UpdateDealerRealtime(
+            int dealerId,
+            string dealerName,
+            string dealerCode,
+            string? address,
+            string? phone,
+            string? email,
+            string? establishedDate,
+            bool isActive,
+            int? totalStaff,
+            double? rating)
+        {
+            if (string.IsNullOrWhiteSpace(dealerName) || string.IsNullOrWhiteSpace(dealerCode))
+            {
+                await Clients.Caller.SendAsync("UpdateResult", new { success = false, message = "Name & Code required" });
+                return;
+            }
+
+            // Kiểm tra xem dealer có tồn tại không
+            var existingDealer = await _dealerHhtService.GetByIdAsync(dealerId);
+            if (existingDealer == null)
+            {
+                await Clients.Caller.SendAsync("UpdateResult", new { success = false, message = "Dealer not found" });
+                return;
+            }
+
+            DateOnly? estDate = null;
+            if (!string.IsNullOrWhiteSpace(establishedDate) && DateTime.TryParse(establishedDate, out var dt))
+                estDate = DateOnly.FromDateTime(dt);
+
+            // Cập nhật thông tin dealer
+            existingDealer.DealerName = dealerName;
+            existingDealer.DealerCode = dealerCode;
+            existingDealer.Address = address;
+            existingDealer.Phone = phone;
+            existingDealer.Email = email;
+            existingDealer.EstablishedDate = estDate;
+            existingDealer.IsActive = isActive;
+            existingDealer.TotalStaff = totalStaff;
+            existingDealer.Rating = (decimal?)(rating ?? 0);
+            existingDealer.LastAudit = DateTime.Now;
+
+            // Cập nhật vào database
+            var result = await _dealerHhtService.UpdateAsync(existingDealer);
+            var success = result > 0; // Chuyển đổi int thành bool
+            
+            if (!success)
+            {
+                await Clients.Caller.SendAsync("UpdateResult", new { success = false, message = "Update failed" });
+                return;
+            }
+
+            // Broadcast thông tin đã cập nhật đến tất cả clients
+            await Clients.All.SendAsync("DealerUpdated", new
+            {
+                dealerId = existingDealer.DealerId,
+                dealerName = existingDealer.DealerName,
+                dealerCode = existingDealer.DealerCode,
+                address = existingDealer.Address,
+                phone = existingDealer.Phone,
+                email = existingDealer.Email,
+                establishedDate = existingDealer.EstablishedDate,
+                isActive = existingDealer.IsActive,
+                totalStaff = existingDealer.TotalStaff,
+                rating = existingDealer.Rating,
+                lastAudit = existingDealer.LastAudit,
+                createdBy = existingDealer.CreatedBy
+            });
+            
+            // Gửi kết quả thành công cho caller
+            await Clients.Caller.SendAsync("UpdateResult", new { success = true, id = existingDealer.DealerId });
+        }
     }
 }

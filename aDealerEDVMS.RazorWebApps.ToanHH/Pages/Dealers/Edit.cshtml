@@ -41,36 +41,38 @@
             </div>
             <div class="form-group">
                 <label asp-for="DealersHht.EstablishedDate" class="control-label"></label>
-                <input asp-for="DealersHht.EstablishedDate" class="form-control" />
+                <input asp-for="DealersHht.EstablishedDate" class="form-control" type="date" />
                 <span asp-validation-for="DealersHht.EstablishedDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DealersHht.IsActive" class="control-label"></label>
-                <input asp-for="DealersHht.IsActive" class="form-control" />
-                <span asp-validation-for="DealersHht.IsActive" class="text-danger"></span>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DealersHht.IsActive" /> @Html.DisplayNameFor(model =>
+                                        model.DealersHht.IsActive)
+                </label>
             </div>
             <div class="form-group">
                 <label asp-for="DealersHht.TotalStaff" class="control-label"></label>
-                <input asp-for="DealersHht.TotalStaff" class="form-control" />
+                <input asp-for="DealersHht.TotalStaff" class="form-control" type="number" />
                 <span asp-validation-for="DealersHht.TotalStaff" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DealersHht.Rating" class="control-label"></label>
-                <input asp-for="DealersHht.Rating" class="form-control" />
+                <input asp-for="DealersHht.Rating" class="form-control" type="number" min="1" max="5" step="0.1" />
                 <span asp-validation-for="DealersHht.Rating" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DealersHht.LastAudit" class="control-label"></label>
-                <input asp-for="DealersHht.LastAudit" class="form-control" />
+                <input asp-for="DealersHht.LastAudit" class="form-control" readonly />
                 <span asp-validation-for="DealersHht.LastAudit" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DealersHht.CreatedBy" class="control-label"></label>
-                <input asp-for="DealersHht.CreatedBy" class="form-control" />
+                <input asp-for="DealersHht.CreatedBy" class="form-control" readonly />
                 <span asp-validation-for="DealersHht.CreatedBy" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="form-group mt-3">
+                <input type="submit" value="Save (Traditional)" class="btn btn-primary me-2" />
+                <button type="button" id="btnHubUpdate" class="btn btn-success">Update by SignalR Hub</button>
             </div>
         </form>
     </div>
@@ -83,3 +85,136 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<!-- SignalR Script -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+<script>
+$(function(){
+    const hub = new signalR.HubConnectionBuilder()
+        .withUrl("/DealerHub")
+        .withAutomaticReconnect() // Thêm tự động kết nối lại
+        .build();
+    let ready = false;
+
+    hub.start()
+       .then(()=>{ ready = true; console.log("✅ EditHub connected"); })
+       .catch(e=>console.error("❌ Hub connect error:", e));
+
+    hub.on("UpdateResult", r=>{
+        console.log("UpdateResult:", r);
+        if(!r.success){
+            alert("Update failed: " + r.message);
+            $('#btnHubUpdate').prop('disabled', false).text('Update by SignalR Hub');
+            return;
+        }
+        // success
+        $('#btnHubUpdate').prop('disabled', false).text('Update by SignalR Hub');
+        
+        // Hiển thị thông báo thành công
+        alert("Dealer updated successfully with ID: " + r.id);
+        
+        // Thêm thông báo thành công vào trang
+        $('<div class="alert alert-success mt-3">Dealer updated successfully with ID: ' + r.id + '</div>')
+            .insertBefore('form')
+            .delay(3000)
+            .fadeOut(500, function() { $(this).remove(); });
+    });
+    
+    // Thêm xử lý sự kiện DealerUpdated
+    hub.on("DealerUpdated", d=>{
+        console.log("🎯 DealerUpdated event:", d);
+        // Hiển thị thông báo khi có dealer được cập nhật
+        $('<div class="alert alert-info mt-3">Dealer "' + d.dealerName + '" has been updated!</div>')
+            .insertBefore('form')
+            .delay(3000)
+            .fadeOut(500, function() { $(this).remove(); });
+            
+        // Nếu đang chỉnh sửa dealer này, cập nhật form
+        const currentDealerId = $('input[name="DealersHht.DealerId"]').val();
+        if (d.dealerId == currentDealerId) {
+            $('input[name="DealersHht.DealerName"]').val(d.dealerName);
+            $('input[name="DealersHht.DealerCode"]').val(d.dealerCode);
+            $('input[name="DealersHht.Address"]').val(d.address || '');
+            $('input[name="DealersHht.Phone"]').val(d.phone || '');
+            $('input[name="DealersHht.Email"]').val(d.email || '');
+            if (d.establishedDate) {
+                const date = new Date(d.establishedDate);
+                const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                $('input[name="DealersHht.EstablishedDate"]').val(formattedDate);
+            } else {
+                $('input[name="DealersHht.EstablishedDate"]').val('');
+            }
+            $('input[name="DealersHht.IsActive"]').prop('checked', d.isActive);
+            $('input[name="DealersHht.TotalStaff"]').val(d.totalStaff || '');
+            $('input[name="DealersHht.Rating"]').val(d.rating || '');
+            $('input[name="DealersHht.LastAudit"]').val(new Date(d.lastAudit).toLocaleString());
+            $('input[name="DealersHht.CreatedBy"]').val(d.createdBy);
+        }
+    });
+
+    $('#btnHubUpdate').off('click').on('click', function(){
+        if(!ready){ 
+            alert("Hub not ready"); 
+            // Thử kết nối lại
+            hub.start()
+               .then(()=>{ ready = true; console.log("✅ EditHub reconnected"); })
+               .catch(e=>console.error("❌ Hub reconnect error:", e));
+            return; 
+        }
+
+        const dealerId = parseInt($('input[name="DealersHht.DealerId"]').val());
+        const name = $('input[name="DealersHht.DealerName"]').val().trim();
+        const code = $('input[name="DealersHht.DealerCode"]').val().trim();
+        if(!name || !code){ alert("Need Name & Code"); return; }
+
+        const dateVal = $('input[name="DealersHht.EstablishedDate"]').val(); // yyyy-MM-dd or ""
+        const data = {
+            dealerId: dealerId,
+            dealerName: name,
+            dealerCode: code,
+            address: $('input[name="DealersHht.Address"]').val(),
+            phone: $('input[name="DealersHht.Phone"]').val(),
+            email: $('input[name="DealersHht.Email"]').val(),
+            establishedDate: dateVal || null,
+            isActive: $('input[name="DealersHht.IsActive"]').is(':checked'),
+            totalStaff: parseInt($('input[name="DealersHht.TotalStaff"]').val()) || 0,
+            rating: parseFloat($('input[name="DealersHht.Rating"]').val()) || 0
+        };
+
+        console.log("🎯 Invoke update:", data);
+        $(this).prop('disabled', true).text('Updating...');
+
+        hub.invoke("UpdateDealerRealtime",
+            data.dealerId,
+            data.dealerName,
+            data.dealerCode,
+            data.address,
+            data.phone,
+            data.email,
+            data.establishedDate,
+            data.isActive,
+            data.totalStaff,
+            data.rating
+        ).catch(err=>{
+            console.error("❌ Invoke error:", err);
+            alert("Invoke error: " + err);
+            $('#btnHubUpdate').prop('disabled', false).text('Update by SignalR Hub');
+        });
+    });
+    
+    // Xử lý khi kết nối bị ngắt
+    hub.onclose(error => {
+        console.log("❌ Connection closed", error);
+        ready = false;
+        setTimeout(() => {
+            hub.start()
+               .then(() => {
+                   ready = true;
+                   console.log("✅ Connection reestablished");
+               })
+               .catch(err => console.error("❌ Reconnection error:", err));
+        }, 5000); // Thử kết nối lại sau 5 giây
+    });
+});
+</script>
