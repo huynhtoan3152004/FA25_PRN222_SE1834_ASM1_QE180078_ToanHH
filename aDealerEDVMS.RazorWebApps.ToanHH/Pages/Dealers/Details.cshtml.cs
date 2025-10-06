@@ -4,21 +4,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using aDealerEDVMS.Repository.ToanHH.DBcontext;
 using aDealerEDVMS.Repository.ToanHH.Models;
 using Microsoft.AspNetCore.Authorization;
+using aDealerEDVMS.Service.ToanHH;
 
 namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 {
     [Authorize(Roles = "1,2")]
     public class DetailsModel : PageModel
     {
-        private readonly aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext _context;
+        private readonly IDealerHhtService _dealerHhtService;
 
-        public DetailsModel(aDealerEDVMS.Repository.ToanHH.DBcontext.FA25_PRN221_SE1834_G5_EVDMSContext context)
+        public DetailsModel(IDealerHhtService dealerHhtService)
         {
-            _context = context;
+            _dealerHhtService = dealerHhtService;
         }
 
         public DealersHht DealersHht { get; set; } = default!;
@@ -30,15 +29,13 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
                 return NotFound();
             }
 
-            var dealershht = await _context.DealersHhts.FirstOrDefaultAsync(m => m.DealerId == id);
+            var dealershht = await _dealerHhtService.GetByIdAsync(id.Value);
             if (dealershht == null)
             {
                 return NotFound();
             }
-            else
-            {
-                DealersHht = dealershht;
-            }
+            
+            DealersHht = dealershht;
             return Page();
         }
     }

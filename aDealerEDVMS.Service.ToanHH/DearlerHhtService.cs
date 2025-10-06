@@ -51,7 +51,12 @@ namespace aDealerEDVMS.Service.ToanHH
             }
             catch (Exception ex)
             {
-                // Log lỗi nếu cần
+                // Log chi tiết lỗi
+                Console.WriteLine($"Error creating dealer: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
             }
             return 0;
         }

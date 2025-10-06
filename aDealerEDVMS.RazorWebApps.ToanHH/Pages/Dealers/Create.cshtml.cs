@@ -40,9 +40,13 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
         {
             if (!ModelState.IsValid)
             {
-                return Page();
+                return Page();  
             }
 
+            // Thêm các giá trị bắt buộc trước khi lưu
+            DealersHht.CreatedBy = 1; // Hoặc lấy từ User.Identity.Name nếu có authentication
+            DealersHht.LastAudit = DateTime.Now;
+            
             // Use the correct method name from your service
             await _dealerHhtService.CreateAsync(DealersHht);
             return RedirectToPage("./Index");
