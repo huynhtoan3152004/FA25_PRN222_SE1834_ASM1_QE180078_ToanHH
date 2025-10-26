@@ -15,6 +15,8 @@ namespace aDealerEDVMS.Service.ToanHH
         Task<int> CreateAsync(DealersHht dealer);
         Task<int> UpdateAsync(DealersHht dealer);
         Task<bool> DeleteAsync(int dealerId);
+        Task<(List<DealersHht> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize);
+        Task<(List<DealersHht> Items, int TotalCount)> SearchPagedAsync(string DealerName, decimal Rating, string Address, int pageNumber, int pageSize);
 
     }
 }

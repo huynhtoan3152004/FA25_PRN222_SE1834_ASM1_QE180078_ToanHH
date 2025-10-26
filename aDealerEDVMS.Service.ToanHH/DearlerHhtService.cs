@@ -104,5 +104,31 @@ namespace aDealerEDVMS.Service.ToanHH
             }
         }
 
+        public async Task<(List<DealersHht> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize)
+        {
+            try
+            {
+                return await _repository.GetPagedAsync(pageNumber, pageSize);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi nếu cần
+                return (new List<DealersHht>(), 0);
+            }
+        }
+
+        public async Task<(List<DealersHht> Items, int TotalCount)> SearchPagedAsync(string DealerName, decimal Rating, string Address, int pageNumber, int pageSize)
+        {
+            try
+            {
+                return await _repository.SearchPagedAsync(DealerName, Rating, Address, pageNumber, pageSize);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi nếu cần
+                return (new List<DealersHht>(), 0);
+            }
+        }
+
     }
 }

@@ -229,26 +229,60 @@
         </div>
     </div>
 
-    <!-- Simple Pagination -->
-    <nav class="mt-4">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link">Previous</a>
-            </li>
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
-    </nav>
+    <!-- Dynamic Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <!-- Previous Button -->
+                <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Page("Index", new {
+                        SearchDealerName = ViewData["CurrentDealerNameFilter"],
+                        SearchRating = ViewData["CurrentRatingFilter"],
+                        SearchAddress = ViewData["CurrentAddressFilter"],
+                        StatusFilter = ViewData["CurrentStatusFilter"],
+                        SortBy = ViewData["CurrentSortBy"],
+                        PageNumber = Model.PageNumber - 1,
+                        PageSize = Model.PageSize
+                    })">Previous</a>
+                </li>
+
+                <!-- Page Numbers -->
+                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Page("Index", new {
+                            SearchDealerName = ViewData["CurrentDealerNameFilter"],
+                            SearchRating = ViewData["CurrentRatingFilter"],
+                            SearchAddress = ViewData["CurrentAddressFilter"],
+                            StatusFilter = ViewData["CurrentStatusFilter"],
+                            SortBy = ViewData["CurrentSortBy"],
+                            PageNumber = i,
+                            PageSize = Model.PageSize
+                        })">@i</a>
+                    </li>
+                }
+
+                <!-- Next Button -->
+                <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Page("Index", new {
+                        SearchDealerName = ViewData["CurrentDealerNameFilter"],
+                        SearchRating = ViewData["CurrentRatingFilter"],
+                        SearchAddress = ViewData["CurrentAddressFilter"],
+                        StatusFilter = ViewData["CurrentStatusFilter"],
+                        SortBy = ViewData["CurrentSortBy"],
+                        PageNumber = Model.PageNumber + 1,
+                        PageSize = Model.PageSize
+                    })">Next</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Pagination Info -->
+        <div class="text-center text-muted mt-2">
+            Showing @((Model.PageNumber - 1) * Model.PageSize + 1) to @Math.Min(Model.PageNumber * Model.PageSize, (int)ViewData["TotalCount"]) of @(ViewData["TotalCount"]) dealers
+        </div>
+    }
 </div>
 
 <!-- Simple Purple Theme CSS -->

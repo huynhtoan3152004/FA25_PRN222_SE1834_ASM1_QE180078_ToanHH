@@ -36,5 +36,48 @@ namespace aDealerEDVMS.Repository.ToanHH
 
             return items ?? new List<DealersHht>();
         }
+
+        // Get paged dealers
+        public async Task<(List<DealersHht> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.DealersHhts.AsQueryable();
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .OrderBy(d => d.DealerId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items ?? new List<DealersHht>(), totalCount);
+        }
+
+        // Search with pagination
+        public async Task<(List<DealersHht> Items, int TotalCount)> SearchPagedAsync(string dealerName, decimal rating, string address, int pageNumber, int pageSize)
+        {
+            var query = _context.DealersHhts.AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(dealerName))
+            {
+                query = query.Where(d => d.DealerName.Contains(dealerName));
+            }
+            if (rating > 0)
+            {
+                query = query.Where(d => d.Rating >= rating);
+            }
+            if (!string.IsNullOrEmpty(address))
+            {
+                query = query.Where(d => d.Address.Contains(address));
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .OrderBy(d => d.DealerId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items ?? new List<DealersHht>(), totalCount);
+        }
     }
 }
