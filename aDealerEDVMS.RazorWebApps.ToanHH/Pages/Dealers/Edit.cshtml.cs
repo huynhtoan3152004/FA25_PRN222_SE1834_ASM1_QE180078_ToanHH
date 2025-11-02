@@ -41,6 +41,17 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Custom validation for required fields
+            if (string.IsNullOrWhiteSpace(DealersHht.DealerName))
+            {
+                ModelState.AddModelError("DealersHht.DealerName", "Dealer Name is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(DealersHht.DealerCode))
+            {
+                ModelState.AddModelError("DealersHht.DealerCode", "Dealer Code is required.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();

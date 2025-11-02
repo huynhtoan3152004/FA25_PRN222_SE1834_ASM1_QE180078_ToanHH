@@ -38,15 +38,26 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Custom validation for required fields
+            if (string.IsNullOrWhiteSpace(DealersHht.DealerName))
+            {
+                ModelState.AddModelError("DealersHht.DealerName", "Dealer Name is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(DealersHht.DealerCode))
+            {
+                ModelState.AddModelError("DealersHht.DealerCode", "Dealer Code is required.");
+            }
+
             if (!ModelState.IsValid)
             {
-                return Page();  
+                return Page();
             }
 
             // Thêm các giá trị bắt buộc trước khi lưu
             DealersHht.CreatedBy = 1; // Hoặc lấy từ User.Identity.Name nếu có authentication
             DealersHht.LastAudit = DateTime.Now;
-            
+
             // Use the correct method name from your service
             await _dealerHhtService.CreateAsync(DealersHht);
             return RedirectToPage("./Index");

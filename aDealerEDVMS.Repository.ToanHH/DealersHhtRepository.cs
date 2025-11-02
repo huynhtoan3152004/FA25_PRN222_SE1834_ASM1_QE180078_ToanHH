@@ -24,7 +24,7 @@ namespace aDealerEDVMS.Repository.ToanHH
         public async Task<DealersHht> GetByIdAsync(int dealerId)
         {
             var dealer = await _context.DealersHhts.FirstOrDefaultAsync(d => d.ToandealerId == dealerId);
-            return dealer ?? new DealersHht();
+            return dealer; // Return null if not found
         }
 
         // Tìm kiếm đại lý theo tên

@@ -11,6 +11,10 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<IDealerHhtService, DearlerHhtService>();
 builder.Services.AddScoped<DealerContractsHhtService>();
 
+// Optimize startup performance
+builder.Services.AddMemoryCache();
+builder.Services.AddResponseCompression();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -29,6 +33,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -36,7 +41,10 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapRazorPages().RequireAuthorization(); ///cau hinh authorization
 app.MapHub<aDealer>("/DealerHub");
+
+// Add health check endpoint for faster startup
+app.MapGet("/health", () => "OK");
+
 app.Run();

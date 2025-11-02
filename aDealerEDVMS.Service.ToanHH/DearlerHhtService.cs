@@ -34,11 +34,12 @@ namespace aDealerEDVMS.Service.ToanHH
             try
             {
                 var item = await _repository.GetByIdAsync(dealerId);
-                return item;
+                return item; // Now returns null if not found
             }
             catch (Exception ex)
             {
                 // Log lỗi nếu cần
+                Console.WriteLine($"Error getting dealer {dealerId}: {ex.Message}");
                 return null;
             }
         }
@@ -68,12 +69,14 @@ namespace aDealerEDVMS.Service.ToanHH
                 var dealer = await _repository.GetByIdAsync(dealerId);
                 if (dealer != null)
                 {
-                    return await _repository.RemoveAsync(dealer);
+                    await _repository.RemoveAsync(dealer);
+                    return true;
                 }
             }
             catch (Exception ex)
             {
                 // Log lỗi nếu cần
+                Console.WriteLine($"Error deleting dealer {dealerId}: {ex.Message}");
             }
             return false;
         }

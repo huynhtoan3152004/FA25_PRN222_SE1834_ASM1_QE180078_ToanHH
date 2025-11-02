@@ -47,19 +47,14 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
             if (dealerToDelete == null) return NotFound();
 
             var success = await _dealerHhtService.DeleteAsync(id.Value);
-            if (!success) return NotFound();
-
-            // Gửi notification qua SignalR cho delete thông thường
-            await _hubContext.Clients.Group("DealerGroup").SendAsync("DealerDeleted", new
+            if (!success)
             {
-                dealerId = id.Value,
-                dealerName = dealerToDelete.DealerName,
-                dealerCode = dealerToDelete.DealerCode,
-                deletedBy = User.Identity?.Name ?? "System",
-                deletedAt = DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy"),
-                message = $"Dealer '{dealerToDelete.DealerName}' deleted (traditional method)",
-                deleteType = "traditional"
-            });
+                ModelState.AddModelError("", "Failed to delete dealer. Please try again.");
+                return Page();
+            }
+
+            // Gửi notification qua SignalR cho delete thông thường - broadcast to all clients
+            await _hubContext.Clients.All.SendAsync("DealerDeleted", id.Value);
 
             return RedirectToPage("./Index");
         }

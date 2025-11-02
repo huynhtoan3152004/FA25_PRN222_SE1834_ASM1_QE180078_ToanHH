@@ -81,10 +81,11 @@
     </dl>
     
     <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <input type="hidden" asp-for="DealersHht.ToandealerId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> 
-        <input type="button" id="btnHubDelete" value="Delete by SignalRHub" class="btn btn-warning" />
-        <a asp-page="./Index">Back to List</a>
+        <input type="submit" value="Delete" class="btn btn-danger me-2" />
+        <input type="button" id="btnHubDelete" value="Delete by SignalRHub" class="btn btn-warning me-2" />
+        <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
     </form>
 </div>
 
