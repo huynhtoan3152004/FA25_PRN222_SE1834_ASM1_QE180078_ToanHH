@@ -59,12 +59,12 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Hubs
                 return;
             }
 
-            entity.DealerId = newId;
+            entity.ToandealerId = newId;
 
             // Broadcast – camelCase
             await Clients.All.SendAsync("DealerCreated", new
             {
-                dealerId = entity.DealerId,
+                dealerId = entity.ToandealerId,
                 dealerName = entity.DealerName,
                 dealerCode = entity.DealerCode,
                 address = entity.Address,
@@ -77,7 +77,7 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Hubs
                 lastAudit = entity.LastAudit,
                 createdBy = entity.CreatedBy
             });
-            await Clients.Caller.SendAsync("CreateResult", new { success = true, id = entity.DealerId });
+            await Clients.Caller.SendAsync("CreateResult", new { success = true, id = entity.ToandealerId });
         }
         
         // Thêm phương thức UpdateDealerRealtime
@@ -136,7 +136,7 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Hubs
             // Broadcast thông tin đã cập nhật đến tất cả clients
             await Clients.All.SendAsync("DealerUpdated", new
             {
-                dealerId = existingDealer.DealerId,
+                dealerId = existingDealer.ToandealerId,
                 dealerName = existingDealer.DealerName,
                 dealerCode = existingDealer.DealerCode,
                 address = existingDealer.Address,
@@ -151,7 +151,7 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Hubs
             });
             
             // Gửi kết quả thành công cho caller
-            await Clients.Caller.SendAsync("UpdateResult", new { success = true, id = existingDealer.DealerId });
+            await Clients.Caller.SendAsync("UpdateResult", new { success = true, id = existingDealer.ToandealerId });
         }
     }
 }

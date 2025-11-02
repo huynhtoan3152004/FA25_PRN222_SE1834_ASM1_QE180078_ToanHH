@@ -93,7 +93,7 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
                     "name" => DealersHht.OrderBy(d => d.DealerName ?? string.Empty).ToList(),
                     "rating" => DealersHht.OrderByDescending(d => d.Rating ?? 0).ToList(),
                     "date" => DealersHht.OrderByDescending(d => d.LastAudit ?? DateTime.MinValue).ToList(),
-                    _ => DealersHht.OrderBy(d => d.DealerId).ToList()
+                    _ => DealersHht.OrderBy(d => d.ToandealerId).ToList()
                 };
 
                 // Calculate total pages

@@ -52,7 +52,7 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
             }
             catch (Exception)
             {
-                if (await _dealerHhtService.GetByIdAsync(DealersHht.DealerId) == null)
+                if (await _dealerHhtService.GetByIdAsync(DealersHht.ToandealerId) == null)
                 {
                     return NotFound();
                 }

@@ -80,7 +80,7 @@
     </dl>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.DealersHht.DealerId">Edit</a> |
+    <a asp-page="./Edit" asp-route-id="@Model.DealersHht.ToandealerId">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
 
@@ -89,7 +89,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
 <script>
 $(function(){
-    const dealerId = @Model.DealersHht.DealerId;
+        const dealerId = @Model.DealersHht.ToandealerId;
     const hub = new signalR.HubConnectionBuilder()
         .withUrl("/DealerHub")
         .withAutomaticReconnect() // Thêm tự động kết nối lại

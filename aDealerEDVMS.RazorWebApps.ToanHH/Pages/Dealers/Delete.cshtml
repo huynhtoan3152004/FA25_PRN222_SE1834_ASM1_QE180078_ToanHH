@@ -81,7 +81,7 @@
     </dl>
     
     <form method="post">
-        <input type="hidden" asp-for="DealersHht.DealerId" />
+        <input type="hidden" asp-for="DealersHht.ToandealerId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> 
         <input type="button" id="btnHubDelete" value="Delete by SignalRHub" class="btn btn-warning" />
         <a asp-page="./Index">Back to List</a>
@@ -110,8 +110,8 @@ $(document).ready(function () {
     // Xử lý nút Delete by SignalR Hub
 $('#btnHubDelete').click(function() {
         console.log("🎯 Delete button clicked");
-        
-        const dealerId = @Model.DealersHht.DealerId;
+
+            const dealerId = @Model.DealersHht.ToandealerId;
         console.log("🎯 Dealer ID:", dealerId);
         
         // Gọi Hub method

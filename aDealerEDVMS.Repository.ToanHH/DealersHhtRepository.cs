@@ -23,7 +23,7 @@ namespace aDealerEDVMS.Repository.ToanHH
         // Lấy đại lý theo DealerId
         public async Task<DealersHht> GetByIdAsync(int dealerId)
         {
-            var dealer = await _context.DealersHhts.FirstOrDefaultAsync(d => d.DealerId == dealerId);
+            var dealer = await _context.DealersHhts.FirstOrDefaultAsync(d => d.ToandealerId == dealerId);
             return dealer ?? new DealersHht();
         }
 
@@ -43,7 +43,7 @@ namespace aDealerEDVMS.Repository.ToanHH
             var query = _context.DealersHhts.AsQueryable();
             var totalCount = await query.CountAsync();
             var items = await query
-                .OrderBy(d => d.DealerId)
+                .OrderBy(d => d.ToandealerId)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -72,7 +72,7 @@ namespace aDealerEDVMS.Repository.ToanHH
 
             var totalCount = await query.CountAsync();
             var items = await query
-                .OrderBy(d => d.DealerId)
+                .OrderBy(d => d.ToandealerId)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
