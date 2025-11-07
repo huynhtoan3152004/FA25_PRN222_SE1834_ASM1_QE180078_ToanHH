@@ -109,23 +109,40 @@ $(document).ready(function () {
         });
 
     // Xử lý nút Delete by SignalR Hub
-$('#btnHubDelete').click(function() {
+    $('#btnHubDelete').click(function() {
         console.log("🎯 Delete button clicked");
 
-            const dealerId = @Model.DealersHht.ToandealerId;
+        const dealerId = @Model.DealersHht.ToandealerId;
         console.log("🎯 Dealer ID:", dealerId);
-        
+
+        // Disable button to prevent double-click
+        $(this).prop('disabled', true).text('Deleting...');
+
         // Gọi Hub method
         connection.invoke("DeleteDealerRealtime", dealerId)
             .then(function() {
-                console.log("✅ Delete successful");
-                alert("Deleted successfully via SignalR!");
-                window.location.href = "/Dealers/Index";
+                console.log("✅ Delete request sent");
+                // Wait for result from hub - don't redirect immediately
             })
             .catch(function(err) {
-                console.error("❌ Delete failed:", err);
-                alert("Delete failed: " + err);
+                console.error("❌ Delete request failed:", err);
+                alert("Delete request failed: " + err);
+                // Re-enable button
+                $('#btnHubDelete').prop('disabled', false).text('Delete by SignalRHub');
             });
+    });
+
+    // Handle delete result from hub
+    connection.on("DeleteResult", function(result) {
+        console.log("🎯 DeleteResult received:", result);
+        if (result.success) {
+            alert("Deleted successfully via SignalR!");
+            window.location.href = "/Dealers/Index";
+        } else {
+            alert("Delete failed: " + (result.message || "Unknown error"));
+            // Re-enable button
+            $('#btnHubDelete').prop('disabled', false).text('Delete by SignalRHub');
+        }
     });
 });
 </script>

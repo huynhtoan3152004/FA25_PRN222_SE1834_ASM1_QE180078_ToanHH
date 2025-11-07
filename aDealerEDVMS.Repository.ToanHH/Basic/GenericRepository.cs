@@ -78,8 +78,8 @@ namespace aDealerEDVMS.Repository.ToanHH.Basic
         public async Task<bool> RemoveAsync(T entity)
         {
             _context.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
 
         public T GetById(int id)

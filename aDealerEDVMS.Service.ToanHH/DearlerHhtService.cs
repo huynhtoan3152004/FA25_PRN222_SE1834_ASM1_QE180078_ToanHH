@@ -69,8 +69,8 @@ namespace aDealerEDVMS.Service.ToanHH
                 var dealer = await _repository.GetByIdAsync(dealerId);
                 if (dealer != null)
                 {
-                    await _repository.RemoveAsync(dealer);
-                    return true;
+                    var result = await _repository.RemoveAsync(dealer);
+                    return result;
                 }
             }
             catch (Exception ex)

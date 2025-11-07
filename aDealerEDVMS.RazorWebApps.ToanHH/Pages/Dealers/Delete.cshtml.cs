@@ -12,7 +12,7 @@ using aDealerEDVMS.RazorWebApps.ToanHH.Hubs;
 
 namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
 {
-    [Authorize(Roles = "1")]
+    [Authorize]
     public class DeleteModel : PageModel
     {
         private readonly IDealerHhtService _dealerHhtService;
@@ -47,14 +47,19 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Pages.Dealers
             if (dealerToDelete == null) return NotFound();
 
             var success = await _dealerHhtService.DeleteAsync(id.Value);
-            if (!success)
-            {
-                ModelState.AddModelError("", "Failed to delete dealer. Please try again.");
-                return Page();
-            }
+            if (!success) return NotFound();
 
-            // Gửi notification qua SignalR cho delete thông thường - broadcast to all clients
-            await _hubContext.Clients.All.SendAsync("DealerDeleted", id.Value);
+            // Gửi notification qua SignalR cho delete thông thường
+            await _hubContext.Clients.All.SendAsync("DealerDeleted", new
+            {
+                dealerId = id.Value,
+                dealerName = dealerToDelete.DealerName,
+                dealerCode = dealerToDelete.DealerCode,
+                deletedBy = User.Identity?.Name ?? "System",
+                deletedAt = DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy"),
+                message = $"Dealer '{dealerToDelete.DealerName}' deleted (traditional method)",
+                deleteType = "traditional"
+            });
 
             return RedirectToPage("./Index");
         }

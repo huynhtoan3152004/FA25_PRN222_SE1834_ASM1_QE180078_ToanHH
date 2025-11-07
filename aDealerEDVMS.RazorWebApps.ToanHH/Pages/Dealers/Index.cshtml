@@ -163,7 +163,7 @@
                     <tbody>
                         @foreach (var item in Model.DealersHht)
                         {
-                            <tr>
+                            <tr data-dealer-id="@item.ToandealerId">
                                 <td><strong>@item.DealerName</strong></td>
                                 <td><span class="badge bg-light-purple text-purple">@item.DealerCode</span></td>
                                 <td>@item.Address</td>
@@ -398,14 +398,22 @@ $(function(){
         setTimeout(()=>$('table tbody tr:first').css('background',''),1500);
     });
 
-    hub.on("DealerDeleted", id=>{
-        $('table tbody tr').each(function(){
-            const delLink = $(this).find(`a[href*="Delete?id=${id}"]`);
-            if(delLink.length){
-                $(this).fadeOut(300, function(){ $(this).remove(); });
-            }
+    hub.on("DealerDeleted", function(data) {
+        console.log("🔔 Dealer deleted:", data);
+        
+        // Xóa row khỏi table
+        $(`tr[data-dealer-id="${data.dealerId}"]`).fadeOut(400, function() {
+            $(this).remove();
         });
+        
+        // Hiển thị thông báo
+        alert(`${data.message}\nDeleted by: ${data.deletedBy}\nAt: ${data.deletedAt}`);
     });
+
+    function updateDealerStats() {
+        // Simple stats update - you might want to refresh the page or make an AJAX call
+        console.log("Dealer stats updated");
+    }
     
     // Thêm xử lý sự kiện DealerUpdated
     hub.on("DealerUpdated", d=>{

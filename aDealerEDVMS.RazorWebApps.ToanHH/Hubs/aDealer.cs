@@ -11,8 +11,43 @@ namespace aDealerEDVMS.RazorWebApps.ToanHH.Hubs
 
         public async Task DeleteDealerRealtime(int dealerId)
         {
-            if (await _dealerHhtService.DeleteAsync(dealerId))
-                await Clients.All.SendAsync("DealerDeleted", dealerId);
+            try
+            {
+                var dealer = await _dealerHhtService.GetByIdAsync(dealerId);
+                if (dealer == null)
+                {
+                    await Clients.Caller.SendAsync("DeleteResult", new { success = false, message = "Dealer not found" });
+                    return;
+                }
+
+                var success = await _dealerHhtService.DeleteAsync(dealerId);
+                if (success)
+                {
+                    // Broadcast to ALL clients (including the caller)
+                    await Clients.All.SendAsync("DealerDeleted", new
+                    {
+                        dealerId = dealerId,
+                        dealerName = dealer.DealerName,
+                        dealerCode = dealer.DealerCode,
+                        deletedBy = "SignalR User",
+                        deletedAt = DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy"),
+                        message = $"Dealer '{dealer.DealerName}' deleted via SignalR",
+                        deleteType = "signalr"
+                    });
+
+                    // Send success result to caller
+                    await Clients.Caller.SendAsync("DeleteResult", new { success = true, dealerId = dealerId });
+                }
+                else
+                {
+                    await Clients.Caller.SendAsync("DeleteResult", new { success = false, message = "Delete failed" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteDealerRealtime: {ex.Message}");
+                await Clients.Caller.SendAsync("DeleteResult", new { success = false, message = "Internal server error" });
+            }
         }
 
         // SIMPLE: nhận tất cả là primitive / string -> ít lỗi binding
