@@ -130,6 +130,25 @@ $(function(){
         }
     });
     
+    // Lắng nghe xóa đại lý theo thời gian thực
+    hub.on("DealerDeleted", id => {
+        console.log("🎯 DealerDeleted event:", id);
+        if (id === dealerId) {
+            // Thông báo và ẩn nội dung chi tiết
+            $('<div class="alert alert-warning mt-3">This dealer has been deleted by another session. Redirecting to list...</div>')
+                .insertBefore('#dealerDetails')
+                .delay(2000)
+                .fadeOut(500, function() { $(this).remove(); });
+            
+            $('#dealerDetails').fadeOut(300);
+
+            // Chuyển về danh sách sau một chút
+            setTimeout(() => {
+                window.location.href = "/Dealers/Index";
+            }, 1500);
+        }
+    });
+
     // Xử lý khi kết nối bị ngắt
     hub.onclose(error => {
         console.log("❌ Connection closed", error);

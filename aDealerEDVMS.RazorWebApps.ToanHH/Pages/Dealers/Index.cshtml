@@ -163,7 +163,7 @@
                     <tbody>
                         @foreach (var item in Model.DealersHht)
                         {
-                            <tr>
+                            <tr id="dealer-row-@item.ToandealerId">
                                 <td><strong>@item.DealerName</strong></td>
                                 <td><span class="badge bg-light-purple text-purple">@item.DealerCode</span></td>
                                 <td>@item.Address</td>
@@ -373,7 +373,7 @@ $(function(){
     hub.on("DealerCreated", d=>{
         console.log("DealerCreated event:", d);
         const row = `
-        <tr style="background:#e9fce9">
+        <tr id="dealer-row-${d.dealerId}" style="background:#e9fce9">
             <td><strong>${d.dealerName}</strong></td>
             <td><span class="badge bg-light-purple text-purple">${d.dealerCode}</span></td>
             <td>${d.address||''}</td>
@@ -398,46 +398,40 @@ $(function(){
         setTimeout(()=>$('table tbody tr:first').css('background',''),1500);
     });
 
-    hub.on("DealerDeleted", id=>{
-        $('table tbody tr').each(function(){
-            const delLink = $(this).find(`a[href*="Delete?id=${id}"]`);
-            if(delLink.length){
-                $(this).fadeOut(300, function(){ $(this).remove(); });
-            }
-        });
+    hub.on("DealerDeleted", id => {
+        const row = $(`#dealer-row-${id}`);
+        if (row.length) {
+            row.fadeOut(300, function () { $(this).remove(); });
+        }
     });
     
     // Thêm xử lý sự kiện DealerUpdated
-    hub.on("DealerUpdated", d=>{
+    hub.on("DealerUpdated", d => {
         console.log("🎯 DealerUpdated event:", d);
-        
-        // Tìm và cập nhật hàng tương ứng trong bảng
-        $('table tbody tr').each(function(){
-            const editLink = $(this).find(`a[href*="Edit?id=${d.dealerId}"]`);
-            if(editLink.length){
-                // Lưu trữ trạng thái hiện tại của hàng
-                const originalBg = $(this).css('background');
-                
-                // Cập nhật nội dung các ô
-                $(this).find('td:eq(0)').html(`<strong>${d.dealerName}</strong>`);
-                $(this).find('td:eq(1)').html(`<span class="badge bg-light-purple text-purple">${d.dealerCode}</span>`);
-                $(this).find('td:eq(2)').text(d.address || '');
-                $(this).find('td:eq(3)').text(d.phone || '');
-                $(this).find('td:eq(4)').text(d.email || '');
-                $(this).find('td:eq(5)').text(d.establishedDate ? new Date(d.establishedDate).toLocaleDateString() : '');
-                $(this).find('td:eq(6)').html(d.isActive ? 
-                    '<span class="badge bg-success">Active</span>' : 
-                    '<span class="badge bg-secondary">Inactive</span>');
-                $(this).find('td:eq(7)').text(d.totalStaff || '');
-                $(this).find('td:eq(8)').text(d.rating || '');
-                $(this).find('td:eq(9)').text(d.lastAudit ? new Date(d.lastAudit).toLocaleDateString() : '');
-                $(this).find('td:eq(10)').text(d.createdBy);
-                
-                // Highlight hàng đã cập nhật
-                $(this).css('background', '#e9fcf9');
-                setTimeout(() => $(this).css('background', originalBg), 1500);
-            }
-        });
+        const row = $(`#dealer-row-${d.dealerId}`);
+        if (row.length) {
+            // Lưu trữ trạng thái hiện tại của hàng
+            const originalBg = row.css('background');
+            
+            // Cập nhật nội dung các ô
+            row.find('td:eq(0)').html(`<strong>${d.dealerName}</strong>`);
+            row.find('td:eq(1)').html(`<span class="badge bg-light-purple text-purple">${d.dealerCode}</span>`);
+            row.find('td:eq(2)').text(d.address || '');
+            row.find('td:eq(3)').text(d.phone || '');
+            row.find('td:eq(4)').text(d.email || '');
+            row.find('td:eq(5)').text(d.establishedDate ? new Date(d.establishedDate).toLocaleDateString() : '');
+            row.find('td:eq(6)').html(d.isActive ? 
+                '<span class="badge bg-success">Active</span>' : 
+                '<span class="badge bg-secondary">Inactive</span>');
+            row.find('td:eq(7)').text(d.totalStaff || '');
+            row.find('td:eq(8)').text(d.rating || '');
+            row.find('td:eq(9)').text(d.lastAudit ? new Date(d.lastAudit).toLocaleDateString() : '');
+            row.find('td:eq(10)').text(d.createdBy);
+            
+            // Highlight hàng đã cập nhật
+            row.css('background', '#e9fcf9');
+            setTimeout(() => row.css('background', originalBg), 1500);
+        }
     });
     
     // Xử lý khi kết nối bị ngắt
